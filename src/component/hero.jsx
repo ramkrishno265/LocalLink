@@ -42,7 +42,7 @@ function Hero() {
                     <p className="font-medium text-gray-600">RATING</p>
                 </div>
                 <div className="gap-[32px] items-center  text-center w-[200px]">
-                    <h1 className="text-2xl font-bold text-gray-800">24/7cd</h1>
+                    <h1 className="text-2xl font-bold text-gray-800">24/7</h1>
                     <p className="font-medium text-gray-600">SUPPORT</p>
                 </div>
 
