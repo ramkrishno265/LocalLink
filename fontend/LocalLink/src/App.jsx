@@ -9,6 +9,8 @@ import Service from "./component/service";
 
 import Header from "./component/header";
 import { Outlet } from "react-router-dom";
+import UserSignup from "./page/provider/ProviderSignup";
+import ProviderSignup from "./page/user/UserSignup";
 
 
 // Layout Component
@@ -35,6 +37,8 @@ function App() {
           <Route path="provider/dashboard" element={<ProviderDashboard />} />
           <Route path="provider/my-services" element={<MyServices />} />
           <Route path="provider/add-service" element={<AddService />} />
+          <Route path="/user/signup" element={<UserSignup />} />
+          <Route path="/provider/signup" element={<ProviderSignup />} />
 
         </Route>
 

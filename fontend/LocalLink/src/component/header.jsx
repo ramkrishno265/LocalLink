@@ -1,49 +1,83 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openSignup, setOpenSignup] = useState(false);
+
+  const navigate = useNavigate();
 
   const linkClass = ({ isActive }) =>
     isActive ? "text-yellow-400" : "hover:text-gray-300";
 
+  const handleSelect = (type) => {
+    setOpenSignup(false);
+
+    if (type === "provider") {
+      navigate("/user/signup");
+    } else {
+      navigate("/provider/signup");
+    }
+  };
+
   return (
-    <div className="bg-gray-800 text-white">
+    <div className="bg-gray-800 text-white relative">
       <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
-        
+
         {/* Left Side */}
         <div className="flex items-center space-x-6">
           <h1 className="text-xl font-bold">LocalLink</h1>
 
-          {/* Desktop Menu */}
           <ul className="hidden md:flex space-x-6">
-            <li>
-              <NavLink to="/" className={linkClass}>Home</NavLink>
-            </li>
-
-            <li>
-              <NavLink to="/user/service" className={linkClass}>Service</NavLink>
-            </li>
-
-            <li>
-              <NavLink to="/provider/dashboard" className={linkClass}>Provider</NavLink>
-            </li>
-
-            <li>
-              <NavLink to="/about" className={linkClass}>About Us</NavLink>
-            </li>
+            <li><NavLink to="/" className={linkClass}>Home</NavLink></li>
+            <li><NavLink to="/user/service" className={linkClass}>Service</NavLink></li>
+            <li><NavLink to="/provider/dashboard" className={linkClass}>Provider</NavLink></li>
+            <li><NavLink to="/about" className={linkClass}>About Us</NavLink></li>
           </ul>
         </div>
 
-        {/* Right Side (Desktop Only) */}
-        <div className="hidden md:flex items-center space-x-3">
+        {/* Right Side */}
+        <div className="hidden md:flex items-center space-x-3 relative">
           <input
             type="text"
             placeholder="Search..."
             className="px-2 py-1 rounded text-black"
           />
-          <button className="bg-blue-500 px-3 py-1 rounded">Login</button>
-          <button className="bg-green-500 px-3 py-1 rounded">Sign Up</button>
+
+          <button className="bg-blue-500 px-3 py-1 rounded">
+            Login
+          </button>
+
+          {/* Sign Up Button */}
+          <div className="relative">
+            <button
+              onClick={() => setOpenSignup(!openSignup)}
+              className="bg-green-500 px-3 py-1 rounded"
+            >
+              Sign Up
+            </button>
+
+            {/* Dropdown */}
+            {openSignup && (
+              <div className="absolute right-0 mt-2 w-48 bg-white text-black rounded shadow-lg z-50">
+                
+                <button
+                  onClick={() => handleSelect("provider")}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+                >
+                  Service Provider
+                </button>
+
+                <button
+                  onClick={() => handleSelect("user")}
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+                >
+                  User
+                </button>
+
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Mobile Menu Button */}
@@ -59,29 +93,10 @@ function Header() {
       {menuOpen && (
         <div className="md:hidden px-4 pb-4 space-y-3">
           <ul className="space-y-2">
-            <li>
-              <NavLink to="/" className={linkClass} onClick={() => setMenuOpen(false)}>
-                Home
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to="/user/service" className={linkClass} onClick={() => setMenuOpen(false)}>
-                Service
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to="/provider/dashboard" className={linkClass} onClick={() => setMenuOpen(false)}>
-                Provider
-              </NavLink>
-            </li>
-
-            <li>
-              <NavLink to="/about" className={linkClass} onClick={() => setMenuOpen(false)}>
-                About Us
-              </NavLink>
-            </li>
+            <li><NavLink to="/" className={linkClass} onClick={()=>setMenuOpen(false)}>Home</NavLink></li>
+            <li><NavLink to="/user/service" className={linkClass} onClick={()=>setMenuOpen(false)}>Service</NavLink></li>
+            <li><NavLink to="/provider/dashboard" className={linkClass} onClick={()=>setMenuOpen(false)}>Provider</NavLink></li>
+            <li><NavLink to="/about" className={linkClass} onClick={()=>setMenuOpen(false)}>About Us</NavLink></li>
           </ul>
 
           <input
@@ -92,8 +107,34 @@ function Header() {
 
           <div className="flex space-x-2">
             <button className="bg-blue-500 px-3 py-1 rounded w-full">Login</button>
-            <button className="bg-green-500 px-3 py-1 rounded w-full">Sign Up</button>
+
+            {/* Mobile Sign Up */}
+            <button
+              onClick={() => setOpenSignup(!openSignup)}
+              className="bg-green-500 px-3 py-1 rounded w-full"
+            >
+              Sign Up
+            </button>
           </div>
+
+          {/* Mobile Dropdown */}
+          {openSignup && (
+            <div className="bg-white text-black rounded shadow mt-2">
+              <button
+                onClick={() => handleSelect("provider")}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+              >
+                Service Provider
+              </button>
+
+              <button
+                onClick={() => handleSelect("user")}
+                className="block w-full text-left px-4 py-2 hover:bg-gray-200"
+              >
+                User
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
