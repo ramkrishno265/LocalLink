@@ -1,33 +1,46 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const linkClass = ({ isActive }) =>
+    isActive ? "text-yellow-400" : "hover:text-gray-300";
+
   return (
     <div className="bg-gray-800 text-white">
-      <div className=" sm:justify-start sm:space-y-4 md:items-center lg:items-center md:justify-between max-w-7xl  flex items-center justify-between p-4">
+      <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
         
-        <div className="flex items-center space-x-6 gap-32" >
+        {/* Left Side */}
+        <div className="flex items-center space-x-6">
+          <h1 className="text-xl font-bold">LocalLink</h1>
 
-       
-        <h1 className="text-xl font-bold">LocalLink</h1>
+          {/* Desktop Menu */}
+          <ul className="hidden md:flex space-x-6">
+            <li>
+              <NavLink to="/" className={linkClass}>Home</NavLink>
+            </li>
 
-        {/* Desktop Menu */}
-        <ul className="hidden md:flex space-x-6">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">Service</a></li>
-          <li><a href="#contact">Provider</a></li>
-          <li><a href="#settings">About Us</a></li>
-        </ul>
+            <li>
+              <NavLink to="/user/service" className={linkClass}>Service</NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/provider/dashboard" className={linkClass}>Provider</NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/about" className={linkClass}>About Us</NavLink>
+            </li>
+          </ul>
         </div>
 
-        {/* Right Side */}
-        <div className="hidden md:hidden lg:flex  md:flex items-center space-x-3">
+        {/* Right Side (Desktop Only) */}
+        <div className="hidden md:flex items-center space-x-3">
           <input
             type="text"
-                   
             placeholder="Search..."
-            className="sm:max-w-[330px] px-2 py-1 rounded text-black"
+            className="px-2 py-1 rounded text-black"
           />
           <button className="bg-blue-500 px-3 py-1 rounded">Login</button>
           <button className="bg-green-500 px-3 py-1 rounded">Sign Up</button>
@@ -35,7 +48,7 @@ function Header() {
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden items-center px-auto text-2xl mt-0"
+          className="md:hidden text-2xl"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           ☰
@@ -44,12 +57,31 @@ function Header() {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="  lg:hidden px-4 pb-4 space-y-3">
-          <ul className="md:hidden space-y-2">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">Service</a></li>
-            <li><a href="#contact">Provider</a></li>
-            <li><a href="#settings">About Us</a></li>
+        <div className="md:hidden px-4 pb-4 space-y-3">
+          <ul className="space-y-2">
+            <li>
+              <NavLink to="/" className={linkClass} onClick={() => setMenuOpen(false)}>
+                Home
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/user/service" className={linkClass} onClick={() => setMenuOpen(false)}>
+                Service
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/provider/dashboard" className={linkClass} onClick={() => setMenuOpen(false)}>
+                Provider
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/about" className={linkClass} onClick={() => setMenuOpen(false)}>
+                About Us
+              </NavLink>
+            </li>
           </ul>
 
           <input

@@ -4,13 +4,15 @@ import tutor from '../image/Service image/tutor.png'
 import ac from '../image/Service image/ac.png'
 import tv from '../image/Service image/cctv.png'
 import computer from '../image/Service image/computer.png'
+import Header from './header'
 
 function Service() {
   return (
-    <div className="bg-white py-12 px-4">
+    <div className="bg-white">
+      
       
       {/* Heading */}
-      <div className="text-center max-w-3xl mx-auto">
+      <div className="text-center max-w-3xl mx-auto mt-8">
         <h1 className="text-2xl md:text-4xl font-bold text-gray-800">
           Popular Service Categories
         </h1>
