@@ -5,12 +5,13 @@ import MyServices from './page/provider/MyServices';
 import AddService from './page/provider/AddService';
 
 import Home from './page/user/home';
-import Service from "./component/service";
+import Service from "./page/user/ServicePage";
 
 import Header from "./component/header";
 import { Outlet } from "react-router-dom";
 import UserSignup from "./page/provider/ProviderSignup";
 import ProviderSignup from "./page/user/UserSignup";
+import Footer from "./component/footer";
 
 
 // Layout Component
@@ -19,6 +20,7 @@ function MainLayout() {
     <>
       <Header />
       <Outlet />
+      <Footer />
     </>
   );
 }
