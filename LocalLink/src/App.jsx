@@ -12,6 +12,8 @@ import { Outlet } from "react-router-dom";
 import UserSignup from "./page/provider/ProviderSignup";
 import ProviderSignup from "./page/user/UserSignup";
 import ProviderLogin from "./page/provider/ProviderLogin";
+import Aboutpage from "./page/user/AboutUs";
+import ProviderList from "./page/provider/Providers_list"
 
 
 // Layout Component
@@ -41,6 +43,8 @@ function App() {
           <Route path="/user/signup" element={<UserSignup />} />
           <Route path="/provider/signup" element={<ProviderSignup />} />
           <Route path="/provider/login" element={<ProviderLogin />} />
+          <Route path="/aboutus" element={<Aboutpage/>}/>
+          <Route path="/provider_list" element={<ProviderList/>}/>
 
 
         </Route>

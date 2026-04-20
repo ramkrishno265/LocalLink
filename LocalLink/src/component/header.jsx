@@ -44,8 +44,8 @@ function Header() {
           <ul className="hidden md:flex space-x-6">
             <li><NavLink to="/" className={linkClass}>Home</NavLink></li>
             <li><NavLink to="/user/service" className={linkClass}>Service</NavLink></li>
-            <li><NavLink to="/provider/dashboard" className={linkClass}>Provider</NavLink></li>
-            <li><NavLink to="/about" className={linkClass}>About Us</NavLink></li>
+            <li><NavLink to="/provider_list" className={linkClass}>Provider</NavLink></li>
+            <li><NavLink to="/aboutus" className={linkClass}>About Us</NavLink></li>
           </ul>
         </div>
 
