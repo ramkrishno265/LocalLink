@@ -11,7 +11,7 @@ import Header from "./component/header";
 import Footer from "./component/footer";
 import { Outlet } from "react-router-dom";
 import UserSignup from "./page/provider/ProviderSignup";
-import ProviderSignup from "./page/user/UserSignup";
+import ProviderSignup from "./page/provider/ProviderSignup";
 import ProviderLogin from "./page/provider/ProviderLogin";
 import Aboutpage from "./page/user/AboutUs";
 import ProviderList from "./page/provider/Providers_list"
