@@ -13,7 +13,7 @@ function Home() {
         <LocalLink_work />
         <Service />
         <About/>
-        <Footer/>
+       
        
         
       </div>

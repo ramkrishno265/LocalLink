@@ -49,6 +49,12 @@ const Footer = () => {
           <p>Email: support@locallink.com</p>
           <p>Phone: +880 1234-567890</p>
           <p>Location: Dhaka, Bangladesh</p>
+
+          <div>
+            <a href="/admin-login" className="hover:text-red-400">
+              Admin Panel
+            </a>
+          </div>
         </div>
 
       </div>

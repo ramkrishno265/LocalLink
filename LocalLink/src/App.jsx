@@ -8,12 +8,18 @@ import Home from './page/user/home';
 import Service from "./component/service";
 
 import Header from "./component/header";
+import Footer from "./component/footer";
 import { Outlet } from "react-router-dom";
 import UserSignup from "./page/provider/ProviderSignup";
 import ProviderSignup from "./page/user/UserSignup";
 import ProviderLogin from "./page/provider/ProviderLogin";
 import Aboutpage from "./page/user/AboutUs";
 import ProviderList from "./page/provider/Providers_list"
+import AdminDashboard from "./page/Admin/AdminDashboard";
+import AdminLogin from "./page/Admin/AdminLogin";
+import { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
+
 
 
 // Layout Component
@@ -22,6 +28,7 @@ function MainLayout() {
     <>
       <Header />
       <Outlet />
+      <Footer/>
     </>
   );
 }
@@ -45,6 +52,9 @@ function App() {
           <Route path="/provider/login" element={<ProviderLogin />} />
           <Route path="/aboutus" element={<Aboutpage/>}/>
           <Route path="/provider_list" element={<ProviderList/>}/>
+          <Route path="/admin" element={<AdminDashboard/>}/>
+          <Route path="/admin-login" element={<AdminLogin/>}/>
+          
 
 
         </Route>

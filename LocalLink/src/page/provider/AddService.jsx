@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { supabase } from "../../supabaseClient";
 
 const AddService = () => {
   const [form, setForm] = useState({
@@ -9,29 +10,44 @@ const AddService = () => {
     experience: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
-    try {
-      const res = await fetch("http://localhost:5000/add_providers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    const { data, error } = await supabase
+      .from("Service")
+      .insert([
+        {
+          name: form.name,
+          category: form.category,
+          phone: form.phone,
+          location: form.location,
+          experience: form.experience,
         },
-        body: JSON.stringify(form),
+      ]);
+
+    setLoading(false);
+
+   if (error) {
+  console.log("SUPABASE ERROR:", error.message);
+  alert(error.message);
+} else {
+      alert("✅ Service Added Successfully!");
+
+      // form clear
+      setForm({
+        name: "",
+        category: "",
+        phone: "",
+        location: "",
+        experience: "",
       });
-
-      const data = await res.json();
-      console.log(data);
-
-      alert("Service Added Successfully!");
-    } catch (error) {
-      console.error(error);
-      alert("Error adding service");
     }
   };
 
@@ -45,30 +61,57 @@ const AddService = () => {
           Add Service
         </h2>
 
-        <input name="name" placeholder="Name" onChange={handleChange}
-          className="w-full mb-3 p-2 border rounded" required />
-
-        <input name="category" placeholder="Category (Electrician)"
+        <input
+          name="name"
+          placeholder="Name"
+          value={form.name}
           onChange={handleChange}
-          className="w-full mb-3 p-2 border rounded" required />
+          className="w-full mb-3 p-2 border rounded"
+          required
+        />
 
-        <input name="phone" placeholder="Phone"
+        <input
+          name="category"
+          placeholder="Category (Electrician)"
+          value={form.category}
           onChange={handleChange}
-          className="w-full mb-3 p-2 border rounded" required />
+          className="w-full mb-3 p-2 border rounded"
+          required
+        />
 
-        <input name="location" placeholder="Location"
+        <input
+          name="phone"
+          placeholder="Phone"
+          value={form.phone}
           onChange={handleChange}
-          className="w-full mb-3 p-2 border rounded" required />
+          className="w-full mb-3 p-2 border rounded"
+          required
+        />
 
-        <input name="experience" placeholder="Experience"
+        <input
+          name="location"
+          placeholder="Location"
+          value={form.location}
           onChange={handleChange}
-          className="w-full mb-4 p-2 border rounded" required />
+          className="w-full mb-3 p-2 border rounded"
+          required
+        />
+
+        <input
+          name="experience"
+          placeholder="Experience"
+          value={form.experience}
+          onChange={handleChange}
+          className="w-full mb-4 p-2 border rounded"
+          required
+        />
 
         <button
           type="submit"
+          disabled={loading}
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
         >
-          Add Service
+          {loading ? "Adding..." : "Add Service"}
         </button>
       </form>
     </div>
