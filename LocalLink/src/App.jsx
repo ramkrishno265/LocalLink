@@ -17,8 +17,11 @@ import Aboutpage from "./page/user/AboutUs";
 import ProviderList from "./page/provider/Providers_list"
 import AdminDashboard from "./page/Admin/AdminDashboard";
 import AdminLogin from "./page/Admin/AdminLogin";
+import Signup from "./component/signup";
+import Login from "./component/login";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
+
 
 
 
@@ -47,13 +50,12 @@ function App() {
           <Route path="provider/dashboard" element={<ProviderDashboard />} />
           <Route path="provider/my-services" element={<MyServices />} />
           <Route path="provider/add-service" element={<AddService />} />
-          <Route path="/user/signup" element={<UserSignup />} />
-          <Route path="/provider/signup" element={<ProviderSignup />} />
-          <Route path="/provider/login" element={<ProviderLogin />} />
           <Route path="/aboutus" element={<Aboutpage/>}/>
           <Route path="/provider_list" element={<ProviderList/>}/>
           <Route path="/admin" element={<AdminDashboard/>}/>
           <Route path="/admin-login" element={<AdminLogin/>}/>
+          <Route path="/signup" element={<Signup/>}/>
+          <Route path="/login" element={<Login/>}/>
           
 
 

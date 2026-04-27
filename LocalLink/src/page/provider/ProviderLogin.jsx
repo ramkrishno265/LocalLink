@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { supabase } from "../../supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 function ProviderLogin() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState({
     email: "",
     password: ""
@@ -21,7 +24,6 @@ function ProviderLogin() {
     setLoading(true);
 
     try {
-      // 🔐 LOGIN
       const { data, error } = await supabase.auth.signInWithPassword({
         email: form.email,
         password: form.password
@@ -29,15 +31,11 @@ function ProviderLogin() {
 
       if (error) throw error;
 
-      alert("Login Successful ✅");
-
-      // 💾 session store (optional)
+      // user save (optional)
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      console.log("Logged user:", data.user);
-
-      // 👉 এখানে চাইলে redirect করতে পারো
-      // window.location.href = "/dashboard";
+      // ✅ redirect to dashboard
+      navigate("/provider/dashboard");
 
     } catch (error) {
       alert(error.message);
