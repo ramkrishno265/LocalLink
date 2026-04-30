@@ -10,14 +10,11 @@ function Login() {
     password: "",
   });
 
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleLogin = async (e) => {
@@ -25,87 +22,111 @@ function Login() {
     setLoading(true);
     setError("");
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: form.email,
-      password: form.password,
-    });
+    try {
+      // 🔐 1. LOGIN
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email: form.email,
+        password: form.password,
+      });
 
-    if (error) {
-      setError(error.message);
+      if (loginError) throw loginError;
+
+      // 👤 2. GET AUTH USER (MOST IMPORTANT FIX)
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+
+      if (userError || !userData?.user) {
+        throw new Error("User not found after login");
+      }
+
+      const user = userData.user;
+
+      // 👤 3. GET PROFILE ROLE
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle(); // 🔥 SAFE
+
+      if (profileError) throw profileError;
+
+      const role = profile?.role;
+
+      console.log("USER:", user);
+console.log("PROFILE:", profile);
+console.log("ERROR:", profileError);
+
+      // 🚀 4. ROLE CHECK + REDIRECT
+      if (!role) {
+        setError("Role not found in database");
+        return;
+      }
+
+      if (role === "provider") {
+        navigate("/provider/dashboard");
+      } else if (role === "client") {
+        navigate("/user/dashboard");
+      } else {
+        setError("Invalid role type");
+      }
+
+    } catch (err) {
+      console.log("LOGIN ERROR:", err.message);
+      setError(err.message);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setLoading(false);
-    navigate("/provider/dashboard");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 via-white to-blue-100 px-4">
+
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border">
+
         {/* Header */}
         <h2 className="text-3xl font-bold text-center text-gray-800">
           Welcome Back
         </h2>
-        <p className="text-center text-gray-500 mt-2">
+
+        <p className="text-center text-gray-500 text-sm mt-2">
           Login to your account
         </p>
 
         {/* Form */}
         <form onSubmit={handleLogin} className="mt-6 space-y-4">
-          
-          {/* Email */}
-          <div>
-            <label className="text-sm text-gray-600">Email</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              onChange={handleChange}
-              required
-              className="w-full mt-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
 
-          {/* Password */}
-          <div>
-            <label className="text-sm text-gray-600">Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              onChange={handleChange}
-              required
-              className="w-full mt-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="Email Address"
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+            required
+          />
 
-          {/* Error */}
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            placeholder="Password"
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+            required
+          />
+
           {error && (
             <p className="text-red-500 text-sm">{error}</p>
           )}
 
-          {/* Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-semibold transition"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-        </form>
 
-        {/* Footer */}
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Don’t have an account?{" "}
-          <span 
-          onClick={() => navigate("/signup")}
-          className="text-blue-600 cursor-pointer">
-            Sign up
-          </span>
-        </p>
+        </form>
 
       </div>
     </div>

@@ -16,10 +16,7 @@ function Signup() {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -28,30 +25,39 @@ function Signup() {
     setError("");
 
     try {
-      // 🔐 Auth signup
-      const { data, error } = await supabase.auth.signUp({
+      // 🔐 1. CREATE AUTH USER
+      const { data, error: authError } = await supabase.auth.signUp({
         email: form.email,
         password: form.password,
       });
 
-      if (error) throw error;
+      if (authError) throw authError;
 
-      const user = data.user;
+      const user = data?.user;
 
-      // 💾 Profile insert
-      const { error: profileError } = await supabase.from("profiles").insert([
-        {
-          id: user.id,
-          name: form.name,
-          email: form.email,
-          role: form.role,
-        },
-      ]);
+      if (!user) {
+        throw new Error("User creation failed");
+      }
+
+      // 💾 2. SAVE PROFILE DATA
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .insert([
+          {
+            id: user.id,      // 🔥 MUST MATCH AUTH ID
+            name: form.name,
+            email: form.email,
+            role: form.role,  // 🔥 IMPORTANT
+          },
+        ]);
 
       if (profileError) throw profileError;
 
+      alert("Signup successful!");
       navigate("/login");
+
     } catch (err) {
+      console.log("SIGNUP ERROR:", err.message);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -59,76 +65,63 @@ function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-blue-100 px-4">
 
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border">
 
         {/* Header */}
         <h2 className="text-3xl font-bold text-center text-gray-800">
           Create Account
         </h2>
-        <p className="text-center text-gray-500 mt-2">
-          Join our platform today
+
+        <p className="text-center text-gray-500 text-sm mt-2">
+          Join our service marketplace
         </p>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
 
           {/* Name */}
-          <div>
-            <label className="text-sm text-gray-600">Full Name</label>
-            <input
-              type="text"
-              name="name"
-              placeholder="Enter your name"
-              value={form.name}
-              onChange={handleChange}
-              className="w-full mt-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
+          <input
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Full Name"
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            required
+          />
 
           {/* Email */}
-          <div>
-            <label className="text-sm text-gray-600">Email</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full mt-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
+          <input
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="Email Address"
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            required
+          />
 
           {/* Password */}
-          <div>
-            <label className="text-sm text-gray-600">Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Create password"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full mt-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              required
-            />
-          </div>
+          <input
+            name="password"
+            type="password"
+            value={form.password}
+            onChange={handleChange}
+            placeholder="Password"
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+            required
+          />
 
           {/* Role */}
-          <div>
-            <label className="text-sm text-gray-600">Account Type</label>
-            <select
-              name="role"
-              value={form.role}
-              onChange={handleChange}
-              className="w-full mt-1 px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <option value="client">Client</option>
-              <option value="provider">Provider</option>
-            </select>
-          </div>
+          <select
+            name="role"
+            value={form.role}
+            onChange={handleChange}
+            className="w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none"
+          >
+            <option value="client">Client (Hire Service)</option>
+            <option value="provider">Provider (Offer Service)</option>
+          </select>
 
           {/* Error */}
           {error && (
@@ -139,19 +132,19 @@ function Signup() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl font-semibold transition duration-300"
           >
-            {loading ? "Creating Account..." : "Signup"}
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
 
         </form>
 
         {/* Footer */}
-        <p className="text-center text-sm text-gray-500 mt-6">
+        <p className="text-center text-sm text-gray-500 mt-5">
           Already have an account?{" "}
           <span
             onClick={() => navigate("/login")}
-            className="text-green-600 cursor-pointer font-medium"
+            className="text-indigo-600 cursor-pointer font-medium"
           >
             Login
           </span>

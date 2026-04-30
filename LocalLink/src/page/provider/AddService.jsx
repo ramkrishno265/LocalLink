@@ -3,51 +3,105 @@ import { supabase } from "../../supabaseClient";
 
 const AddService = () => {
   const [form, setForm] = useState({
+    service_type: "",
     name: "",
-    category: "",
     phone: "",
     location: "",
     experience: "",
   });
 
+  const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // -------------------
+  // input handle
+  // -------------------
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  // -------------------
+  // image upload
+  // -------------------
+  const uploadImage = async (file) => {
+    const fileName = `${Date.now()}_${file.name}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("service-images")
+      .upload(fileName, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data } = supabase.storage
+      .from("service-images")
+      .getPublicUrl(fileName);
+
+    return data.publicUrl;
+  };
+
+  // -------------------
+  // submit
+  // -------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const { data, error } = await supabase
-      .from("Service")
-      .insert([
+    try {
+      // 🔐 safe user fetch
+      const { data, error: authError } = await supabase.auth.getUser();
+
+      const user = data?.user;
+
+      if (authError || !user) {
+        throw new Error("User not logged in");
+      }
+
+      let imageUrl = "";
+
+      // 📸 upload image
+      if (file) {
+        if (!file.type.startsWith("image/")) {
+          throw new Error("Only image files allowed");
+        }
+        imageUrl = await uploadImage(file);
+      }
+
+      // 💾 insert service
+      const { error } = await supabase.from("services").insert([
         {
+          user_id: user.id,
+          service_type: form.service_type,
           name: form.name,
-          category: form.category,
           phone: form.phone,
           location: form.location,
           experience: form.experience,
+          image: imageUrl,
         },
       ]);
 
-    setLoading(false);
+      if (error) throw error;
 
-   if (error) {
-  console.log("SUPABASE ERROR:", error.message);
-  alert(error.message);
-} else {
       alert("✅ Service Added Successfully!");
 
-      // form clear
+      // reset form
       setForm({
+        service_type: "",
         name: "",
-        category: "",
         phone: "",
         location: "",
         experience: "",
       });
+
+      setFile(null);
+    } catch (error) {
+      console.log("ERROR:", error.message);
+      alert(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,18 +116,18 @@ const AddService = () => {
         </h2>
 
         <input
-          name="name"
-          placeholder="Name"
-          value={form.name}
+          name="service_type"
+          placeholder="Service Type (Electrician, Plumber)"
+          value={form.service_type}
           onChange={handleChange}
           className="w-full mb-3 p-2 border rounded"
           required
         />
 
         <input
-          name="category"
-          placeholder="Category (Electrician)"
-          value={form.category}
+          name="name"
+          placeholder="Name"
+          value={form.name}
           onChange={handleChange}
           className="w-full mb-3 p-2 border rounded"
           required
@@ -99,11 +153,19 @@ const AddService = () => {
 
         <input
           name="experience"
-          placeholder="Experience"
+          placeholder="Experience (e.g. 2 years)"
           value={form.experience}
           onChange={handleChange}
-          className="w-full mb-4 p-2 border rounded"
+          className="w-full mb-3 p-2 border rounded"
           required
+        />
+
+        {/* 📸 image */}
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="w-full mb-4"
         />
 
         <button

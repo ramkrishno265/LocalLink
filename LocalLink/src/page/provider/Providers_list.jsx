@@ -1,93 +1,79 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "../../supabaseClient";
 
-const providers = [
-  {
-    fullName: "Rahim Uddin",
-    firstName: "Rahim",
-    category: "Electrician",
-    location: "Dhaka",
-    rating: 4.8,
-    desc: "Expert in home wiring and electrical repairs.",
-    img: "https://randomuser.me/api/portraits/men/1.jpg",
-  },
-  {
-    fullName: "Karim Hasan",
-    firstName: "Karim",
-    category: "Plumber",
-    location: "Gazipur",
-    rating: 4.6,
-    desc: "Professional plumber for pipe and leak solutions.",
-    img: "https://randomuser.me/api/portraits/men/2.jpg",
-  },
-  {
-    fullName: "Sadia Akter",
-    firstName: "Sadia",
-    category: "Tutor",
-    location: "Uttara",
-    rating: 4.9,
-    desc: "Experienced tutor for Math and Science.",
-    img: "https://randomuser.me/api/portraits/women/3.jpg",
-  },
-
-  // auto generate rest
-  ...Array.from({ length: 27 }, (_, i) => ({
-    fullName: `Provider ${i + 4}`,
-    firstName: `Name${i + 4}`,
-    category: ["Electrician", "Plumber", "Tutor", "Technician"][i % 4],
-    location: ["Dhaka", "Uttara", "Mirpur", "Banani"][i % 4],
-    rating: (4 + Math.random()).toFixed(1),
-    desc: "Reliable and experienced service provider.",
-    img: `https://randomuser.me/api/portraits/men/${i + 4}.jpg`,
-  })),
-];
-
-// ⭐ Star component
 const Stars = ({ rating }) => {
-  const fullStars = Math.floor(rating);
+  const fullStars = Math.floor(rating || 0);
+
   return (
-    <div className="flex justify-center text-yellow-500">
+    <div className="flex justify-center text-yellow-400 text-lg">
       {Array.from({ length: 5 }, (_, i) => (
-        <span key={i}>
-          {i < fullStars ? "★" : "☆"}
-        </span>
+        <span key={i}>{i < fullStars ? "★" : "☆"}</span>
       ))}
     </div>
   );
 };
 
 const Providers = () => {
+  const [providers, setProviders] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
 
-  // Filter logic
+  // 🔹 Load from DB
+  useEffect(() => {
+    const fetchProviders = async () => {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .from("services")
+        .select("*");
+
+      if (!error) {
+        setProviders(data || []);
+      } else {
+        console.log(error.message);
+      }
+
+      setLoading(false);
+    };
+
+    fetchProviders();
+  }, []);
+
+  // 🔍 Filter logic
   const filtered = providers.filter((p) => {
     return (
-      (p.fullName.toLowerCase().includes(search.toLowerCase()) ||
-        p.location.toLowerCase().includes(search.toLowerCase())) &&
-      (category === "All" || p.category === category)
+      (p.name?.toLowerCase().includes(search.toLowerCase()) ||
+        p.location?.toLowerCase().includes(search.toLowerCase())) &&
+      (category === "All" || p.service_type === category)
     );
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 px-56 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-4 md:px-20 py-10">
 
-      <h1 className="text-3xl font-bold text-center text-purple-600 mb-6">
+      {/* Title */}
+      <h1 className="text-4xl font-bold text-center text-gray-800 mb-2">
         Service Providers
       </h1>
 
-      {/* 🔍 Search + Filter */}
-      <div className="flex flex-col md:flex-row gap-4 mb-8 justify-center">
+      <p className="text-center text-gray-500 mb-8">
+        Find trusted professionals near you
+      </p>
+
+      {/* Search + Filter */}
+      <div className="flex flex-col md:flex-row gap-4 justify-center mb-10">
 
         <input
           type="text"
           placeholder="Search by name or location..."
-          className="px-4 py-2 rounded-lg border w-full md:w-1/3"
+          className="px-4 py-3 rounded-xl border shadow-sm w-full md:w-1/3 focus:ring-2 focus:ring-purple-400 outline-none"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <select
-          className="px-4 py-2 rounded-lg border"
+          className="px-4 py-3 rounded-xl border shadow-sm focus:ring-2 focus:ring-purple-400 outline-none"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
@@ -97,54 +83,81 @@ const Providers = () => {
           <option>Tutor</option>
           <option>Technician</option>
         </select>
-      </div>
-
-      {/* Cards */}
-      <div className="grid md:grid-cols-5 gap-6">
-
-        {filtered.map((p, index) => (
-          <div
-            key={index}
-            className="bg-white/80 backdrop-blur-md rounded-2xl shadow-md p-6 text-center hover:shadow-xl transition"
-          >
-
-            <img
-              src={p.img}
-              alt={p.fullName}
-              className="w-20 h-20 mx-auto rounded-full object-cover border-4 border-purple-200"
-            />
-
-            <h2 className="mt-3 font-semibold text-gray-800">
-              {p.fullName}
-            </h2>
-
-            <p className="text-purple-600 text-sm">
-              ({p.firstName})
-            </p>
-
-            <p className="text-gray-500 text-sm mt-1">
-              {p.category}
-            </p>
-
-            <p className="text-gray-400 text-xs">
-              📍 {p.location}
-            </p>
-
-            <p className="text-gray-600 text-sm mt-2">
-              {p.desc}
-            </p>
-
-            {/* ⭐ Stars */}
-            <Stars rating={p.rating} />
-
-            <button className="mt-3 bg-purple-600 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-purple-700">
-              View Profile
-            </button>
-
-          </div>
-        ))}
 
       </div>
+
+      {/* Loading */}
+      {loading ? (
+        <p className="text-center text-gray-500">Loading providers...</p>
+      ) : (
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+          {filtered.map((p) => (
+            <div
+              key={p.id}
+              className="bg-white rounded-2xl shadow-md hover:shadow-2xl transition overflow-hidden group"
+            >
+
+              {/* Image */}
+              <div className="relative">
+                <img
+                  src={
+                    p.image ||
+                    "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  }
+                  className="w-full h-40 object-cover group-hover:scale-105 transition duration-300"
+                  alt={p.name}
+                />
+
+                {/* Category Badge */}
+                <span className="absolute top-3 left-3 bg-purple-600 text-white text-xs px-3 py-1 rounded-full shadow">
+                  {p.service_type}
+                </span>
+              </div>
+
+              {/* Content */}
+              <div className="p-4 text-center">
+
+                {/* Profile Name */}
+                <h2 className="text-lg font-semibold text-gray-800">
+                  {p.name}
+                </h2>
+
+                {/* Location */}
+                <p className="text-sm text-gray-500 mt-1">
+                  📍 {p.location}
+                </p>
+
+                {/* Experience */}
+                <p className="text-sm text-gray-600 mt-1">
+                  ⏳ {p.experience}
+                </p>
+
+                {/* ⭐ Rating */}
+                <div className="mt-2">
+                  <Stars rating={p.rating || 4.5} />
+                </div>
+
+                {/* Buttons */}
+                <div className="mt-4 flex gap-2">
+
+                  <button className="flex-1 bg-purple-600 text-white py-2 rounded-lg text-sm hover:bg-purple-700 transition">
+                    View Profile
+                  </button>
+
+                  <button className="flex-1 border border-purple-600 text-purple-600 py-2 rounded-lg text-sm hover:bg-purple-50 transition">
+                    Contact
+                  </button>
+
+                </div>
+
+              </div>
+            </div>
+          ))}
+
+        </div>
+      )}
     </div>
   );
 };

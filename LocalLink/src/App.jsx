@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import ProviderDashboard from './page/provider/ProviderDashboard';
+import UserDashboard from './page/user/userDashboard';
+
 import MyServices from './page/provider/MyServices';
 import AddService from './page/provider/AddService';
 
@@ -19,6 +21,7 @@ import AdminDashboard from "./page/Admin/AdminDashboard";
 import AdminLogin from "./page/Admin/AdminLogin";
 import Signup from "./component/signup";
 import Login from "./component/login";
+import Profile from "./component/profile";
 import { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 
@@ -48,6 +51,8 @@ function App() {
           <Route path="user/service" element={<Service />} />
 
           <Route path="provider/dashboard" element={<ProviderDashboard />} />
+          <Route path="user/dashboard" element={<UserDashboard />} />
+
           <Route path="provider/my-services" element={<MyServices />} />
           <Route path="provider/add-service" element={<AddService />} />
           <Route path="/aboutus" element={<Aboutpage/>}/>
@@ -56,6 +61,8 @@ function App() {
           <Route path="/admin-login" element={<AdminLogin/>}/>
           <Route path="/signup" element={<Signup/>}/>
           <Route path="/login" element={<Login/>}/>
+          <Route path="/profile" element={<Profile/>}/>
+
           
 
 
