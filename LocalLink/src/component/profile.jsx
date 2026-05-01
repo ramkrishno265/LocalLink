@@ -61,7 +61,7 @@ const Profile = () => {
     const fileName = `${Date.now()}_${file.name}`;
 
     const { error } = await supabase.storage
-      .from("profile-images")
+      .from("avatars")
       .upload(fileName, file);
 
     if (error) {
@@ -70,7 +70,7 @@ const Profile = () => {
     }
 
     const { data } = supabase.storage
-      .from("profile-images")
+      .from("avatars")
       .getPublicUrl(fileName);
 
     return data.publicUrl;
