@@ -18,6 +18,7 @@ import ProviderDashboard from "./page/provider/ProviderDashboard";
 import MyServices from "./page/provider/MyServices";
 import AddService from "./page/provider/AddService";
 import ProviderLogin from "./page/provider/ProviderLogin";
+import Provider_Profile from "./page/provider/provider_profile"
 
 /* User */
 import UserDashboard from "./page/user/userDashboard";
@@ -80,6 +81,7 @@ function App() {
           <Route path="provider/dashboard" element={<ProviderDashboard />} />
           <Route path="provider/my-services" element={<MyServices />} />
           <Route path="provider/add-service" element={<AddService />} />
+          <Route path="provider/profile" element={<Provider_Profile />} />
 
         </Route>
 

@@ -7,14 +7,14 @@ const UserDashboard = () => {
 
   const [profile, setProfile] = useState(null);
   const [services, setServices] = useState([]);
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  // 🔹 Load user + services
+  // 🔹 Load user + data
   useEffect(() => {
     const fetchData = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: userData } = await supabase.auth.getUser();
 
+      const user = userData?.user;
       if (!user) return;
 
       // Profile
@@ -26,7 +26,7 @@ const UserDashboard = () => {
 
       setProfile(profileData);
 
-      // All services (for user to browse)
+      // Services
       const { data: serviceData } = await supabase
         .from("services")
         .select("*");
@@ -37,30 +37,82 @@ const UserDashboard = () => {
     fetchData();
   }, []);
 
+  // 🔴 Logout
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
 
-      {/* 🔵 Top Bar */}
+      {/* 🔵 TOP BAR */}
       <div className="bg-white shadow px-6 py-4 flex justify-between items-center">
+
         <h1 className="text-xl font-bold text-gray-800">
           User Dashboard
         </h1>
 
-        <button
-          onClick={() => supabase.auth.signOut().then(() => navigate("/login"))}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
-        >
-          Logout
-        </button>
+        {/* 👤 PROFILE MENU */}
+        <div className="relative">
+
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex items-center gap-2 bg-gray-100 px-4 py-2 rounded-full hover:bg-gray-200"
+          >
+            {/* Avatar */}
+            <div className="w-8 h-8 rounded-full overflow-hidden bg-blue-500 text-white flex items-center justify-center">
+
+              {profile?.image ? (
+                <img
+                  src={profile.image}
+                  alt="profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                profile?.name?.charAt(0).toUpperCase() || "U"
+              )}
+
+            </div>
+
+            <span className="font-medium">
+              {profile?.name || "User"}
+            </span>
+          </button>
+
+          {/* Dropdown */}
+          {menuOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-xl overflow-hidden border z-50">
+
+              <button
+                onClick={() => navigate("/profile")}
+                className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              >
+                ⚙️ Settings
+              </button>
+
+              <button
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-2 hover:bg-red-100 text-red-600"
+              >
+                🚪 Logout
+              </button>
+
+            </div>
+          )}
+
+        </div>
       </div>
 
+      {/* CONTENT */}
       <div className="p-6 max-w-6xl mx-auto">
 
-        {/* 👤 Profile Section */}
+        {/* 👤 PROFILE CARD */}
         <div className="bg-white rounded-2xl shadow p-6 mb-6">
           <h2 className="text-2xl font-bold text-gray-800">
             Welcome, {profile?.name || "User"}
           </h2>
+
           <p className="text-gray-500">{profile?.email}</p>
 
           <span className="inline-block mt-2 px-3 py-1 text-sm bg-green-100 text-green-600 rounded-full">
@@ -68,7 +120,7 @@ const UserDashboard = () => {
           </span>
         </div>
 
-        {/* 🔍 Search Bar (UI only) */}
+        {/* 🔍 SEARCH */}
         <div className="mb-6">
           <input
             type="text"
@@ -77,7 +129,7 @@ const UserDashboard = () => {
           />
         </div>
 
-        {/* ⚡ Services List */}
+        {/* ⚡ SERVICES */}
         <h2 className="text-lg font-semibold mb-4">
           Available Services
         </h2>
@@ -89,12 +141,18 @@ const UserDashboard = () => {
               key={service.id}
               className="bg-white p-5 rounded-2xl shadow hover:shadow-xl transition"
             >
+              <img
+                src={service.image}
+                alt="service"
+                className="w-full h-40 object-cover object-top rounded-lg"
+              />
+
               <h3 className="text-xl font-semibold text-gray-800">
-                {service.service_name}
+                📂{service.service_type}
               </h3>
 
               <p className="text-gray-500 mt-1">
-                📂 {service.category}
+                🙎‍♂️ {service.name}
               </p>
 
               <p className="text-gray-500">
@@ -109,8 +167,15 @@ const UserDashboard = () => {
                 ⭐ Experience: {service.experience} years
               </p>
 
-              <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">
-                Contact Provider
+              <button
+                onClick={() =>
+                  navigate("/provider/profile", {
+                    state: { provider: service },
+                  })
+                }
+                className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+              >
+                View Profile
               </button>
             </div>
           ))}
