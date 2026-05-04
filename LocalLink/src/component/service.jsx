@@ -8,7 +8,7 @@ import Header from './header'
 
 function Service() {
   return (
-    <div className="bg-white">
+    <div className="bg-white mb-20">
       
       
       {/* Heading */}

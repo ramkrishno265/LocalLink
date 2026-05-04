@@ -47,7 +47,7 @@ const Providers = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 md:px-20 py-10">
+    <div className="min-h-screen bg-gray-50 px-4 md:px-[350px] py-10">
 
       {/* Title */}
       <h1 className="text-3xl font-bold text-center mb-2">
@@ -105,7 +105,7 @@ const Providers = () => {
                   p.image ||
                   "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                 }
-                className="w-24 h-24 rounded-full mx-auto object-cover border"
+                className="w-full h-40 rounded-xl mx-auto object-cover object-top border-2 border-purple-100"
               />
 
               {/* Name */}

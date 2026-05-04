@@ -81,7 +81,7 @@ function App() {
           <Route path="provider/dashboard" element={<ProviderDashboard />} />
           <Route path="provider/my-services" element={<MyServices />} />
           <Route path="provider/add-service" element={<AddService />} />
-          <Route path="provider/profile" element={<Provider_Profile />} />
+          <Route path="provider/profile/:id" element={<Provider_Profile />} />
 
         </Route>
 

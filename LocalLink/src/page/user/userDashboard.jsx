@@ -168,11 +168,7 @@ const UserDashboard = () => {
               </p>
 
               <button
-                onClick={() =>
-                  navigate("/provider/profile", {
-                    state: { provider: service },
-                  })
-                }
+                onClick={() => navigate(`/provider/profile/${service.user_id}`)}
                 className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
               >
                 View Profile
